@@ -7,8 +7,9 @@ class Dog(Base):
     __tablename__ = "dogs"
 
     name = Column(String)
-    pk = Column(Integer, primary_key=True, unique=True)
     kind = Column(String)
+    pk = Column(Integer, primary_key=True, unique=True)
+
 
 
 class Timestamp(Base):
