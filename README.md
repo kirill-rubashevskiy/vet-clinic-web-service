@@ -17,3 +17,7 @@ It is a solo project performed by me, [Kirill Rubashevskiy (Кирилл Руб�
 ### Version 1.0
 
 - the service is built and deployed according to the initial assignment.
+
+### Version 2.0
+
+- added PostgresSQL support to store service database.

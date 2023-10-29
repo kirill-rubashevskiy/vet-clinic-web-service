@@ -1,8 +1,10 @@
-import random
 import uvicorn
-from enum import Enum
-from pydantic import BaseModel
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.orm import Session
+
+import schemas
+import crud
+from database import SessionLocal
 
 
 description = """
@@ -44,99 +46,73 @@ app = FastAPI(
 )
 
 
-class DogType(str, Enum):
-    terrier = "terrier"
-    bulldog = "bulldog"
-    dalmatian = "dalmatian"
-
-
-class Dog(BaseModel):
-    name: str
-    pk:   int
-    kind: DogType
-
-
-class Timestamp(BaseModel):
-    id:        int
-    timestamp: int
-
-
-dogs_db = {
-    0: Dog(name='Bob', pk=0, kind='terrier'),
-    1: Dog(name='Marli', pk=1, kind="bulldog"),
-    2: Dog(name='Snoopy', pk=2, kind='dalmatian'),
-    3: Dog(name='Rex', pk=3, kind='dalmatian'),
-    4: Dog(name='Pongo', pk=4, kind='dalmatian'),
-    5: Dog(name='Tillman', pk=5, kind='bulldog'),
-    6: Dog(name='Uga', pk=6, kind='bulldog')
-}
-
-post_db = [
-    Timestamp(id=0, timestamp=12),
-    Timestamp(id=1, timestamp=10)
-]
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @app.get("/")
-async def root():
-    patient = random.choice(list(dogs_db.values()))
-    return {"message": f"Welcome to the Vet Clinic Web Service. Patient of the day is {patient.kind} {patient.name}"}
+def root():
+    return {"message": f"Welcome to the Vet Clinic Web Service"}
 
 
 @app.post("/post",
-          response_model=Timestamp,
+          response_model=schemas.Timestamp,
           summary="Get Post",
           tags=["timestamps"])
-async def get_post(timestamp: Timestamp):
-    if timestamp.id in [existing_timestamp.id for existing_timestamp in post_db]:
-        raise HTTPException(status_code=409, detail="this id already exists")
-    post_db.append(timestamp)
-    return timestamp
+def get_post(timestamp: schemas.Timestamp, db: Session = Depends(get_db)):
+    db_timestamp = crud.get_timestamp(db=db, timestamp_id=timestamp.id)
+    if db_timestamp is not None:
+        raise HTTPException(status_code=409, detail="Timestamp with this id already exists")
+    return crud.create_timestamp(db=db, timestamp=timestamp)
 
 
 @app.get("/dog",
-         response_model=list[Dog],
+         response_model=list[schemas.Dog],
          summary="Get Dogs",
          tags=["dogs"])
-async def get_dogs(kind: DogType = None):
-    if kind:
-        res = [dog for dog in dogs_db.values() if dog.kind == kind]
-    else:
-        res = [dog for dog in dogs_db.values()]
-
-    return res
+def get_dogs(kind: schemas.DogType = None, db: Session = Depends(get_db)):
+    dogs = crud.get_dogs(db=db, kind=kind)
+    return dogs
 
 
 @app.post("/dog",
-          response_model=Dog,
+          response_model=schemas.Dog,
           summary="Create Dog",
           tags=["dogs"])
-async def create_dog(dog: Dog):
-    if dog.pk in dogs_db:
-        raise HTTPException(status_code=409, detail="this pk already exists")
-    dogs_db[dog.pk] = dog
-    return dog
+def create_dog(dog: schemas.Dog, db: Session = Depends(get_db)):
+    db_dog = crud.get_dog(db=db, dog_pk=dog.pk)
+    if db_dog is not None:
+        raise HTTPException(status_code=409, detail="Dog with this pk already exists")
+    return crud.create_dog(db=db, dog=dog)
 
 
 @app.get("/dog/{pk}",
-         response_model=Dog,
+         response_model=schemas.Dog,
          summary="Get Dog By PK",
          tags=["dogs"])
-async def get_dog_by_pk(pk: int):
-    if pk not in dogs_db:
-        raise HTTPException(status_code=404, detail="this pk not found")
-    return dogs_db[pk]
+def get_dog_by_pk(pk: int, db: Session = Depends(get_db)):
+    db_dog = crud.get_dog(db=db, dog_pk=pk)
+    if db_dog is None:
+        raise HTTPException(status_code=404, detail="Dog not found")
+    return db_dog
 
 
 @app.patch("/dog/{pk}",
-           response_model=Dog,
+           response_model=schemas.Dog,
            summary="Update Dog",
            tags=["dogs"])
-async def update_dog(pk: int, dog: Dog):
-    if pk not in dogs_db:
-        raise HTTPException(status_code=404, detail="this pk not found")
-    dogs_db[pk] = dog
-    return dog
+def update_dog(pk: int, dog: schemas.Dog, db: Session = Depends(get_db)):
+    db_dog = crud.get_dog(db=db, dog_pk=pk)
+    if db_dog is None:
+        raise HTTPException(status_code=404, detail="Dog not found")
+    db_dog = crud.get_dog(db=db, dog_pk=dog.pk)
+    if pk != dog.pk and db_dog is not None:
+        raise HTTPException(status_code=409, detail="Dog with pk you try to assign already exists")
+    return crud.update_dog(db=db, dog=dog)
 
 
 if __name__ == "__main__":
