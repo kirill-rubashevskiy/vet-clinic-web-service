@@ -3,7 +3,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-
+# to run local
+# SQLALCHEMY_DATABASE_URL = ('postgresql://vetclinic_user:aGliabvr0EnH2f8H2aQ8pFqxmbjmEwbm@dpg-ckuml53amefc73b38u2g-a'
+#                            '.frankfurt-postgres.render.com/vetclinic_db')
+# to run on render.com
 SQLALCHEMY_DATABASE_URL = ('postgresql://vetclinic_user:aGliabvr0EnH2f8H2aQ8pFqxmbjmEwbm@dpg-ckuml53amefc73b38u2g-a'
                            '/vetclinic_db')
 

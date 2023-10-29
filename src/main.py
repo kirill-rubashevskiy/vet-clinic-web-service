@@ -2,9 +2,9 @@ import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
-from src import schemas
-from src import crud
-from src.database import SessionLocal
+import schemas
+import crud
+from database import SessionLocal
 
 
 description = """
