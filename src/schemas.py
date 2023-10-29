@@ -10,16 +10,16 @@ class DogType(str, Enum):
 
 class Dog(BaseModel):
     name: str
-    kind: DogType
     pk: int
+    kind: DogType
 
     class Config:
         from_attributes = True
 
 
 class Timestamp(BaseModel):
-    timestamp: int
     id: int
+    timestamp: int
 
     class Config:
         from_attributes = True
