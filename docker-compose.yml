@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python3 main.py'
+    depends_on:
+      - db
+    volumes:
+      - ./:/code:ro
+    environment:
+      - DATABASE_URL=postgresql://vet_clinic_user:vet_clinic_pass@db/vet_clinic_db
+    ports:
+      - "5555:5555"
+
+  db:
+      image: postgres:14-alpine
+      volumes:
+        - postgres_data:/var/lib/postgresql/data/
+      expose:
+        - 5432
+      environment:
+        - POSTGRES_USER=vet_clinic_user
+        - POSTGRES_PASSWORD=vet_clinic_pass
+        - POSTGRES_DB=vet_clinic_db
+
+volumes:
+      postgres_data:
