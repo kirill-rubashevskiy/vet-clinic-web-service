@@ -14,10 +14,6 @@ It is a solo project performed by me, [Kirill Rubashevskiy (Кирилл Руб�
 
 ## Versions
 
-### Version 1.0
-
-- the service is built and deployed according to the initial assignment.
-
-### Version 2.0
-
-- added PostgresSQL support to store service database.
+- **v1.0**: the service is built and deployed according to the initial assignment
+- **v1.1**: added PostgresSQL support to store the service database
+- **v1.2**: the app containerized with Docker
