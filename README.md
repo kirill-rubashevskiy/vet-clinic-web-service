@@ -17,3 +17,12 @@ It is a solo project performed by me, [Kirill Rubashevskiy (Кирилл Руб�
 - **v1.0**: the service is built and deployed according to the initial assignment
 - **v1.1**: added PostgresSQL support to store the service database
 - **v1.2**: the app containerized with Docker
+
+# Usage
+
+The deployed service is available at https://vet-clinic-web-service.onrender.com/
+
+If you want to run the service locally: 
+
+1. clone the repository 
+2. in Terminal run command `docker-compose up -d`
