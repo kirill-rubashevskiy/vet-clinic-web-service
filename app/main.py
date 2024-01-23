@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 import schemas
 import crud
-from database import SessionLocal
+
+from database import get_db
 
 
 description = """
@@ -44,14 +45,6 @@ app = FastAPI(
         "email": "kirill.rubashevskiy@gmail.com"
     }
 )
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.get("/")
@@ -116,4 +109,4 @@ def update_dog(pk: int, dog: schemas.Dog, db: Session = Depends(get_db)):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=5555)
