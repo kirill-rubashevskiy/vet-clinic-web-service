@@ -1,11 +1,23 @@
 version: '3'
 
 services:
-  web:
-    build: .
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python3 main.py'
+  bot:
+    build:
+      context: .
+      dockerfile: ./tg_bot/Dockerfile
     depends_on:
-      - db
+      - web
+    volumes:
+      - ./:/code:ro
+
+  web:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+
     volumes:
       - ./:/code:ro
     environment:
@@ -23,6 +35,11 @@ services:
         - POSTGRES_USER=vet_clinic_user
         - POSTGRES_PASSWORD=vet_clinic_pass
         - POSTGRES_DB=vet_clinic_db
+      healthcheck:
+        test: pg_isready -U vet_clinic_user -d vet_clinic_db
+        interval: 10s
+        timeout: 5s
+        retries: 5
 
 volumes:
       postgres_data:
