@@ -6,6 +6,7 @@ class DogType(str, Enum):
     terrier = "terrier"
     bulldog = "bulldog"
     dalmatian = "dalmatian"
+    other = "other"
 
 
 class Dog(BaseModel):

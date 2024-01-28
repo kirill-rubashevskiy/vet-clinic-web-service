@@ -1,10 +1,11 @@
+import os
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-SQLALCHEMY_DATABASE_URL = ('postgresql://vet_clinic_user:vet_clinic_pass@db/vet_clinic_db')
+SQLALCHEMY_DATABASE_URL = os.getenv('DATABASE_URL')
 
 dogs_data = {
     'name': ['Bob', 'Marli', 'Snoopy', 'Rex', 'Pongo', 'Tillman', 'Uga'],

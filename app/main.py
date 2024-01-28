@@ -79,7 +79,7 @@ def get_dogs(kind: schemas.DogType = None, db: Session = Depends(get_db)):
 def create_dog(dog: schemas.Dog, db: Session = Depends(get_db)):
     db_dog = crud.get_dog(db=db, dog_pk=dog.pk)
     if db_dog is not None:
-        raise HTTPException(status_code=409, detail="Dog with this pk already exists")
+        raise HTTPException(status_code=409, detail=f"Dog with pk {str(dog.pk)} already exists")
     return crud.create_dog(db=db, dog=dog)
 
 
@@ -90,7 +90,7 @@ def create_dog(dog: schemas.Dog, db: Session = Depends(get_db)):
 def get_dog_by_pk(pk: int, db: Session = Depends(get_db)):
     db_dog = crud.get_dog(db=db, dog_pk=pk)
     if db_dog is None:
-        raise HTTPException(status_code=404, detail="Dog not found")
+        raise HTTPException(status_code=404, detail=f"Dog with pk {str(pk)} is not found")
     return db_dog
 
 
